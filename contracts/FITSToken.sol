@@ -1,7 +1,7 @@
 pragma solidity >=0.4.21 <0.6.0;
 
 contract FITSToken {
-    string  public name = "FITIMAGE SHARE";
+    string  public name = "FITS SHARE";
     string  public symbol = "FITS";
     string  public standard = "FITS Token v1.0";
     uint256 public totalSupply;
@@ -18,6 +18,11 @@ contract FITSToken {
         uint256 _value
     );
 
+    // This notifies clients about the amount burnt
+    event Burn(
+        address indexed from,
+        uint256 value);
+
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
@@ -26,18 +31,24 @@ contract FITSToken {
         totalSupply = _initialSupply;
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
+    function transfer(address _to, uint256 _value) public
+    returns (bool success) {
+        // Exception if account does not have enough
         require(balanceOf[msg.sender] >= _value);
 
+        // Transfer tokens from 'msg.sender' to '_to'
         balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
 
+        // Transfer event
         emit Transfer(msg.sender, _to, _value);
 
+        // Return a boolean
         return true;
     }
 
-    function approve(address _spender, uint256 _value) public returns (bool success) {
+    function approve(address _spender, uint256 _value) public
+    returns (bool success) {
         allowance[msg.sender][_spender] = _value;
 
         emit Approval(msg.sender, _spender, _value);
