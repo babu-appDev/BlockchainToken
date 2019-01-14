@@ -12,8 +12,11 @@ contract FITSTokenSale {
   event Sell(address _buyer, uint256 _amount);
 
   constructor(FITSToken _tokenContract, uint256 _tokenPrice) public {
+    // Assign an admin
     admin = msg.sender;
+    // Token contract
     tokenContract = _tokenContract;
+    // Token price
     tokenPrice = _tokenPrice;
   }
 
@@ -24,9 +27,12 @@ contract FITSTokenSale {
 
   // Buy Tokens
   function buyTokens(uint256 _numberOfTokens) public payable {
-        // Keep Track of number of tokens sold
+
+        // Require that value is equal to tokens
         require(msg.value == multiply(_numberOfTokens, tokenPrice));
+        // Require that the contract has enough tokens
         require(tokenContract.balanceOf(address(this)) >= _numberOfTokens);
+        // Require that a transfer is succesful
         require(tokenContract.transfer(msg.sender, _numberOfTokens));
 
         tokensSold += _numberOfTokens;
@@ -37,9 +43,12 @@ contract FITSTokenSale {
 
     // Ending Token FITSTokenSale
     function endSale() public {
+        // Require admin.
         require(msg.sender == admin);
+        // Transfer remaining FITS tokens to admin.
         require(tokenContract.transfer(admin, tokenContract.balanceOf(address(this))));
 
+        // Destroy contract
         // UPDATE: Let's not destroy the contract here
         // Just transfer the balance to the admin
         admin.transfer(address(this).balance);

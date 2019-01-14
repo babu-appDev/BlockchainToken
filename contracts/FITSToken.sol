@@ -1,5 +1,9 @@
 pragma solidity >=0.4.21 <0.6.0;
 
+interface tokenRecipient {
+    function receiveApproval(address _from, uint256 _value, address _token, bytes calldata _extraData) external;
+}
+
 contract FITSToken {
     // Public variables of the token
     string  public name = "FITS SHARE";
@@ -118,15 +122,15 @@ contract FITSToken {
      * @param _value the max amount they can spend
      * @param _extraData some extra information to send to the approved contract
      */
-    // function approveAndCall(address _spender, uint256 _value, bytes memory _extraData)
-    //     public
-    //     returns (bool success) {
-    //     tokenRecipient spender = tokenRecipient(_spender);
-    //     if (approve(_spender, _value)) {
-    //         spender.receiveApproval(msg.sender, _value, address(this), _extraData);
-    //         return true;
-    //     }
-    // }
+    function approveAndCall(address _spender, uint256 _value, bytes memory _extraData)
+        public
+        returns (bool success) {
+        tokenRecipient spender = tokenRecipient(_spender);
+        if (approve(_spender, _value)) {
+            spender.receiveApproval(msg.sender, _value, address(this), _extraData);
+            return true;
+        }
+    }
 
     /**
      * Destroy tokens
